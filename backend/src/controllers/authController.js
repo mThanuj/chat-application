@@ -10,10 +10,10 @@ const generateTokens = async (user) => {
     const refreshToken = await user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
-
+    await user.save();
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500);
+    throw new ApiError(500,error.message);
   }
 };
 
@@ -28,8 +28,6 @@ export const signup = asyncHandler(async (req, res) => {
   const user = new User({ username, password });
   const { accessToken, refreshToken } = await generateTokens(user);
 
-  await user.save();
-
   const response = new ApiResponse(201, user, "User created");
 
   res
@@ -41,13 +39,11 @@ export const signup = asyncHandler(async (req, res) => {
 
 export const login = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-
   const user = await User.findOne({ username });
 
   if (!user) {
     throw new ApiError(401, "User not registered");
   }
-
   if (!(await user.checkPassword(password))) {
     throw new ApiError(401, "Invalid credentials");
   }
@@ -67,4 +63,10 @@ export const logout = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200,'',"User logged out successfully"));
 });
 
-export const refreshAccessToken = asyncHandler(async (req, res) => {});
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const {username} = req.body;
+  const user = await User.findOne({username});
+  const {accessToken,refreshToken} = await generateTokens(user);
+  res.cookie("accessToken",accessToken).cookie("refreshToken",refreshToken);
+  res.status(200).json(new ApiResponse(200,{accessToken,refreshToken},"token refreshed"));
+});
