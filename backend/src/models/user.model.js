@@ -3,27 +3,32 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { ACCESS_EXPIRY, JWT_SECRET, REFRESH_EXPIRY } from "../constants.js";
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    avatar: {
+      type: String,
+      required: false,
+    },
+    refreshToken: {
+      type: String,
+    },
   },
-  password: {
-    type: String,
-    required: true,
+  {
+    timestamps: true,
   },
-  avatar: {
-    type: String,
-    required: false,
-  },
-  refreshToken: {
-    type: String,
-  },
-});
+);
 
 userSchema.pre("save", async function (next) {
-  if(!(this.isModified("password"))) {
+  if (!this.isModified("password")) {
     next();
   }
   this.password = await bcrypt.hash(this.password, 10);
