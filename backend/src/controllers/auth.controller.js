@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import { COOKIE_OPTIONS } from "../constants.js";
+
 const generateTokens = async (user) => {
   try {
     const accessToken = await user.generateAccessToken();
@@ -10,6 +11,7 @@ const generateTokens = async (user) => {
 
     user.refreshToken = refreshToken;
     await user.save();
+
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, error.message);
@@ -68,12 +70,22 @@ export const logout = asyncHandler(async (req, res) => {
 });
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-  const { username } = req.body;
-  const user = await User.findOne({ username });
-  const { accessToken, refreshToken } = await generateTokens(user);
-  res.cookie("accessToken", accessToken).cookie("refreshToken", refreshToken);
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) {
+    throw new ApiError(401, "No refresh token found");
+  }
+
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    throw new ApiError(401, "Invalid refresh token");
+  }
+
+  const { accessToken, newRefreshToken } = await generateTokens(user);
+
   res
     .status(200)
+    .cookie("accessToken", accessToken)
+    .cookie("refreshToken", newRefreshToken)
     .json(
       new ApiResponse(200, { accessToken, refreshToken }, "token refreshed"),
     );
