@@ -7,6 +7,14 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.COUDINARY_API_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
+const ACCESS_EXPIRY = process.env.ACCESS_EXPIRY;
+const REFRESH_EXPIRY = process.env.REFRESH_EXPIRY;
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "strict",
+};
 
 export {
   PORT,
@@ -15,4 +23,8 @@ export {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
+  JWT_SECRET,
+  ACCESS_EXPIRY,
+  REFRESH_EXPIRY,
+  COOKIE_OPTIONS,
 };
