@@ -1,9 +1,8 @@
 import asyncHandler from "../utils/asyncHandler.js";
-import User from "../models/userModel.js";
+import User from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import { COOKIE_OPTIONS } from "../constants.js";
-
 const generateTokens = async (user) => {
   try {
     const accessToken = await user.generateAccessToken();
@@ -13,7 +12,7 @@ const generateTokens = async (user) => {
     await user.save();
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500,error.message);
+    throw new ApiError(500, error.message);
   }
 };
 
@@ -58,15 +57,25 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  for(let cookie in req.cookies)
-      res.clearCookie(cookie)
-  res.status(200).json(new ApiResponse(200,'',"User logged out successfully"));
+  for (let cookie in req.cookies) {
+    res.clearCookie(cookie);
+  }
+
+  // res.clearCookie("accessToken").clearCookie("refreshToken");
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "", "User logged out successfully"));
 });
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-  const {username} = req.body;
-  const user = await User.findOne({username});
-  const {accessToken,refreshToken} = await generateTokens(user);
-  res.cookie("accessToken",accessToken).cookie("refreshToken",refreshToken);
-  res.status(200).json(new ApiResponse(200,{accessToken,refreshToken},"token refreshed"));
+  const { username } = req.body;
+  const user = await User.findOne({ username });
+  const { accessToken, refreshToken } = await generateTokens(user);
+  res.cookie("accessToken", accessToken).cookie("refreshToken", refreshToken);
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, { accessToken, refreshToken }, "token refreshed"),
+    );
 });
