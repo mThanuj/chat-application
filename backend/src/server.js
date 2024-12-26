@@ -25,11 +25,14 @@ connectDB()
       console.log("Client connected:", socket.id);
 
       socket.on("login", (user) => {
-        onlineUsers.set(user._id, {socketId:socket.id,...user});
+        onlineUsers.set(user._id, { socketId: socket.id, ...user });
 
         console.log(onlineUsers);
 
-        socket.emit("onlineUsers", Array.from(onlineUsers.values()));
+        socket.emit(
+          "onlineUsers",
+          Array.from(onlineUsers.values()).filter((u) => u._id != user._id),
+        );
       });
 
       socket.on("directMessage", async ({ sender, receiver, message }) => {
