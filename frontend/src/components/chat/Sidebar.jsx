@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { io } from "socket.io-client";
-import {Button} from "@/components/ui/button.jsx";
-import {PersonStandingIcon} from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { PersonStandingIcon } from "lucide-react";
 
 export function SideBar() {
   const { getCurrentUser } = useContext(AuthContext);
@@ -41,13 +41,16 @@ export function SideBar() {
   }, []);
 
   return (
-    <div className="h-screen w-[20%] border-2 border-red-500 text-center flex flex-col overflow-y-auto gap-4 p-4">
-      <h1 className={'font-bold text-lg'}>Online Users</h1>
+    <div className="h-screen w-[20%] border-2 text-center flex flex-col overflow-y-auto gap-4 p-4">
+      <h1 className={"font-bold text-lg"}>Online Users</h1>
       {onlineUsers.length > 0 ? (
-        onlineUsers.map((u, index) =>
-            <Button variant={"ghost"} key={index}>
-              <span className={'flex justify-center items-center'}><PersonStandingIcon/> <p>{u.username}</p></span>
-            </Button>)
+        onlineUsers.map((u, index) => (
+          <Button variant={"ghost"} key={index}>
+            <span className={"flex justify-center items-center"}>
+              <PersonStandingIcon /> <p>{u.username}</p>
+            </span>
+          </Button>
+        ))
       ) : (
         <p>No users online</p>
       )}
