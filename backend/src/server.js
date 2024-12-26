@@ -27,11 +27,9 @@ connectDB()
       socket.on("login", (user) => {
         onlineUsers.set(user._id, { socketId: socket.id, ...user });
 
-        console.log(onlineUsers);
-
         socket.emit(
           "onlineUsers",
-          Array.from(onlineUsers.values()).filter((u) => u._id != user._id),
+          Array.from(onlineUsers.values()).filter((u) => u._id !== user._id),
         );
       });
 

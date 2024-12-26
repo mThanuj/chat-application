@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { SideBar } from "../chat/Sidebar";
-import MessageInput from "../chat/MessageInput";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Chatbox from "../chat/Chatbox";
@@ -17,7 +16,7 @@ const Home = () => {
   return (
     <div className={"flex"}>
       <SideBar />
-      <Chatbox/>
+      <Chatbox />
       <Navbar />
     </div>
   );
