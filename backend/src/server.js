@@ -42,11 +42,15 @@ connectDB()
 
         const receiverSocketId = onlineUsers.get(receiver);
         if (receiverSocketId) {
-          io.to(receiverSocketId).emit("directMessage", newMessage);
+          io.to(receiverSocketId.socketId).emit("directMessage", newMessage);
         }
       });
 
       socket.on("disconnect", () => {
+        const user = onlineUsers.get(user._id);
+        if (user) {
+          onlineUsers.delete(user._id);
+        }
         console.log("Client disconnected");
       });
     });
