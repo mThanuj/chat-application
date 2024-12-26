@@ -48,20 +48,19 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } = await generateTokens(user);
-
+  user.password = null;
+  user.refreshToken = null;
   return res
     .cookie("accessToken", accessToken, COOKIE_OPTIONS)
     .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
     .status(200)
-    .json(new ApiResponse(200, user, "Login successful"));
+    .json(new ApiResponse(200, {user,accessToken}, "Login successful"));
 });
 
 export const logout = asyncHandler(async (req, res) => {
   for (let cookie in req.cookies) {
     res.clearCookie(cookie);
   }
-
-  // res.clearCookie("accessToken").clearCookie("refreshToken");
 
   res
     .status(200)
