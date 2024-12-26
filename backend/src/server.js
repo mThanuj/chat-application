@@ -24,12 +24,12 @@ connectDB()
     io.on("connection", (socket) => {
       console.log("Client connected:", socket.id);
 
-      socket.on("login", (userId) => {
-        onlineUsers.set(userId, socket.id);
+      socket.on("login", (user) => {
+        onlineUsers.set(user._id, {socketId:socket.id,...user});
 
         console.log(onlineUsers);
 
-        socket.emit("onlineUsers", Array.from(onlineUsers.keys()));
+        socket.emit("onlineUsers", Array.from(onlineUsers.values()));
       });
 
       socket.on("directMessage", async ({ sender, receiver, message }) => {

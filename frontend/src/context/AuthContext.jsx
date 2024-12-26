@@ -27,7 +27,6 @@ const AuthProvider = ({ children }) => {
   const getCurrentUser = async () => {
     try {
       const { data } = await api.get("/auth/current-user");
-
       return data.data;
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
