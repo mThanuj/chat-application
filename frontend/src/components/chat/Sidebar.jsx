@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { io } from "socket.io-client";
-import {Button} from "@/components/ui/button.jsx";
-import {PersonStandingIcon} from "lucide-react";
 import {ReceiverContext} from "@/context/ReceiverContext.jsx";
+import { Button } from "@/components/ui/button.jsx";
+import { PersonStandingIcon } from "lucide-react";
 
 export function SideBar() {
   const { getCurrentUser } = useContext(AuthContext);
@@ -54,6 +54,7 @@ export function SideBar() {
             <div variant={"ghost"} key={index} onClick={()=>handleClick(u._id)}>
               <span className={'flex justify-center items-center'}><PersonStandingIcon/> <p>{u.username}</p></span>
             </div>)
+
       ) : (
         <p>No users online</p>
       )}
