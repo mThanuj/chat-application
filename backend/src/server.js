@@ -19,7 +19,7 @@ connectDB()
       },
     });
 
-    let onlineUsers = Map();
+    let onlineUsers = new Map();
 
     io.on("connection", (socket) => {
       console.log("Client connected:", socket.id);
