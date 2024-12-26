@@ -26,6 +26,10 @@ connectDB()
 
       socket.on("login", (userId) => {
         onlineUsers.set(userId, socket.id);
+
+        console.log(onlineUsers);
+
+        socket.emit("onlineUsers", Array.from(onlineUsers.keys()));
       });
 
       socket.on("directMessage", async ({ sender, receiver, message }) => {

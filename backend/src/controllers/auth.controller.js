@@ -54,7 +54,7 @@ export const login = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken, COOKIE_OPTIONS)
     .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
     .status(200)
-    .json(new ApiResponse(200, {user,accessToken}, "Login successful"));
+    .json(new ApiResponse(200, { user, accessToken }, "Login successful"));
 });
 
 export const logout = asyncHandler(async (req, res) => {
@@ -77,4 +77,8 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, { accessToken, refreshToken }, "token refreshed"),
     );
+});
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(new ApiResponse(200, req.user, "Fetched User"));
 });
