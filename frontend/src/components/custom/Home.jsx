@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <div className={"flex"}>
       <SideBar />
-      <Chatbox />
+      <Chatbox/>
       <Navbar />
     </div>
   );
