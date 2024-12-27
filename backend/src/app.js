@@ -1,5 +1,4 @@
 import express from "express";
-import authRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { CORS_ORIGIN } from "./constants.js";
@@ -21,6 +20,10 @@ app.on("error", (error) => {
   throw error;
 });
 
+import authRouter from "./routes/auth.routes.js";
+import messageRouter from "./routes/message.route.js";
+
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/messages", messageRouter);
 
 export default app;

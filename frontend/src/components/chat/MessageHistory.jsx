@@ -1,10 +1,5 @@
-
-import {useContext} from "react";
-import {ReceiverContext} from "@/context/ReceiverContext.jsx";
-
 const MessageHistory = () => {
-  const {receiverId} = useContext(ReceiverContext);
-  return <div>{receiverId}</div>;
+  return <div>{"Hello"}</div>;
 };
 
 export default MessageHistory;

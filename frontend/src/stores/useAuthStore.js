@@ -1,9 +1,11 @@
 import { api } from "@/lib/utils";
+import { io } from "socket.io-client";
 import { create } from "zustand";
 
-const useAuthStore = create((set) => ({
-  token: localStorage.getItem("token") || null,
-  user: null,
+const useAuthStore = create((set, get) => ({
+  onlineUsers: [],
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  socket: null,
 
   login: async (username, password) => {
     try {
@@ -12,9 +14,12 @@ const useAuthStore = create((set) => ({
         password,
       });
 
-      const accessToken = res.data.data.accessToken;
-      localStorage.setItem("token", accessToken);
-      set({ token: accessToken });
+      const user = res.data.data;
+      set({ user });
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      get().connectSocket();
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
     }
@@ -23,8 +28,11 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       await api.get("/auth/logout");
+      set({ user: null });
+
       localStorage.clear();
-      set({ token: null, user: null });
+
+      get().disconnectSocket();
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
     }
@@ -33,10 +41,44 @@ const useAuthStore = create((set) => ({
   getCurrentUser: async () => {
     try {
       const { data } = await api.get("/auth/current-user");
-
       set({ user: data.data });
+
+      localStorage.setItem("user", JSON.stringify(data.data));
+
+      get().connectSocket();
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
+    }
+  },
+
+  connectSocket: async () => {
+    const { user } = get();
+    if (!user || get().socket?.connected) {
+      return;
+    }
+
+    const socket = io("http://localhost:5000", {
+      query: {
+        userId: user._id,
+      },
+    });
+    socket.connect();
+
+    set({ socket });
+
+    socket.on("connect", () => {
+      console.log("Socket connected");
+    });
+
+    socket.on("getOnlineUsers", (data) => {
+      console.log("Received online users:", data);
+      set({ onlineUsers: data });
+    });
+  },
+
+  disconnectSocket: async () => {
+    if (get().socket && get().socket?.connected) {
+      get().socket.disconnect();
     }
   },
 

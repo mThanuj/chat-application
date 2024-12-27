@@ -1,21 +1,16 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { Button } from "@/components/ui/button.jsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "@/stores/useAuthStore";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/");
-    }
-  }, []);
-
   const { login } = useAuthStore();
   const [formData, setFormData] = useState({ username: "", password: "" });
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     await login(formData.username, formData.password);

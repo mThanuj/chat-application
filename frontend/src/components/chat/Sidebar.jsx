@@ -1,58 +1,19 @@
-import { useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import { ReceiverContext } from "@/context/ReceiverContext.jsx";
-import { PersonStandingIcon } from "lucide-react";
 import useAuthStore from "@/stores/useAuthStore";
 
 export function SideBar() {
-  const { getCurrentUser } = useAuthStore();
-  const { setReceiverId } = useContext(ReceiverContext);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    let socket;
-
-    const initializeSocket = async () => {
-      try {
-        const data = await getCurrentUser();
-        setUser(data);
-
-        if (data && data._id) {
-          socket = io("http://localhost:5000");
-
-          socket.emit("login", data);
-
-          socket.on("onlineUsers", (data) => {
-            setOnlineUsers(data);
-          });
-        }
-      } catch (error) {
-        console.error("Error initializing socket:", error);
-      }
-    };
-
-    initializeSocket();
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, []);
-
-  const handleClick = (id) => {
-    setReceiverId(id);
-  };
+  const { user, onlineUsers } = useAuthStore();
 
   return (
     <div className="h-screen w-[20%] border-2 text-center flex flex-col overflow-y-auto gap-4 p-4">
+      <h2>
+        Hello: <span>{user.username}</span>
+      </h2>
       <h1 className={"font-bold text-lg"}>Online Users</h1>
       {onlineUsers.length > 0 ? (
         onlineUsers.map((u, index) => (
-          <div variant={"ghost"} key={index} onClick={() => handleClick(u._id)}>
+          <div key={index} onClick={() => {}}>
             <span className={"flex justify-center items-center"}>
-              <PersonStandingIcon /> <p>{u.username}</p>
+              <p>{u.username}</p>
             </span>
           </div>
         ))
