@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { create } from "zustand";
 
 const useAuthStore = create((set, get) => ({
-  onlineUsers: [],
+  onlineUsers: JSON.parse(localStorage.getItem("onlineUsers")) || [],
   user: JSON.parse(localStorage.getItem("user")) || null,
   socket: null,
 
@@ -67,11 +67,11 @@ const useAuthStore = create((set, get) => ({
     set({ socket });
 
     socket.on("connect", () => {
-      console.log("Socket connected");
+      // ToDo:
     });
 
     socket.on("getOnlineUsers", (data) => {
-      console.log("Received online users:", data);
+      localStorage.setItem("onlineUsers",JSON.stringify(data));
       set({ onlineUsers: data });
     });
   },
