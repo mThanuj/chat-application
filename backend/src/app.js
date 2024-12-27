@@ -16,6 +16,11 @@ app.use(
   }),
 );
 
+app.on("error", (error) => {
+  console.log(`ERROR: ${error}`);
+  throw error;
+});
+
 app.use("/api/v1/auth", authRouter);
 
-export { app };
+export default app;
