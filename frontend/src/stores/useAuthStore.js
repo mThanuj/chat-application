@@ -1,4 +1,4 @@
-import { api } from "@/lib/utils";
+import { api } from "@/lib/utils.js";
 import { io } from "socket.io-client";
 import { create } from "zustand";
 
@@ -67,11 +67,11 @@ const useAuthStore = create((set, get) => ({
     set({ socket });
 
     socket.on("connect", () => {
-      // ToDo:
+      // TODO:
     });
 
     socket.on("getOnlineUsers", (data) => {
-      localStorage.setItem("onlineUsers",JSON.stringify(data));
+      localStorage.setItem("onlineUsers", JSON.stringify(data));
       set({ onlineUsers: data });
     });
   },
