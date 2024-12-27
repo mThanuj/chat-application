@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import useAuthStore from "@/stores/useAuthStore";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout } = useAuthStore();
 
   const handleLogout = async (e) => {
     e.preventDefault();

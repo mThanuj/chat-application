@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { Button } from "@/components/ui/button.jsx";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext.jsx";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "@/stores/useAuthStore";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Login = () => {
     }
   }, []);
 
-  const { login } = useContext(AuthContext);
+  const { login } = useAuthStore();
   const [formData, setFormData] = useState({ username: "", password: "" });
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -91,4 +91,3 @@ const Login = () => {
 };
 
 export { Login };
-

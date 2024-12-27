@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import { io } from "socket.io-client";
-import {ReceiverContext} from "@/context/ReceiverContext.jsx";
-import { Button } from "@/components/ui/button.jsx";
+import { ReceiverContext } from "@/context/ReceiverContext.jsx";
 import { PersonStandingIcon } from "lucide-react";
+import useAuthStore from "@/stores/useAuthStore";
 
 export function SideBar() {
-  const { getCurrentUser } = useContext(AuthContext);
-  const {setReceiverId} = useContext(ReceiverContext);
+  const { getCurrentUser } = useAuthStore();
+  const { setReceiverId } = useContext(ReceiverContext);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -42,19 +41,21 @@ export function SideBar() {
     };
   }, []);
 
-  const handleClick = (id)=>{
+  const handleClick = (id) => {
     setReceiverId(id);
-  }
+  };
 
   return (
     <div className="h-screen w-[20%] border-2 text-center flex flex-col overflow-y-auto gap-4 p-4">
-      <h1 className={'font-bold text-lg'}>Online Users</h1>
+      <h1 className={"font-bold text-lg"}>Online Users</h1>
       {onlineUsers.length > 0 ? (
-        onlineUsers.map((u, index) =>
-            <div variant={"ghost"} key={index} onClick={()=>handleClick(u._id)}>
-              <span className={'flex justify-center items-center'}><PersonStandingIcon/> <p>{u.username}</p></span>
-            </div>)
-
+        onlineUsers.map((u, index) => (
+          <div variant={"ghost"} key={index} onClick={() => handleClick(u._id)}>
+            <span className={"flex justify-center items-center"}>
+              <PersonStandingIcon /> <p>{u.username}</p>
+            </span>
+          </div>
+        ))
       ) : (
         <p>No users online</p>
       )}
