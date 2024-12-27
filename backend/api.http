@@ -1,0 +1,8 @@
+POST https://localhost:5000/api/v1/messages/send/1
+Content-Type: application/json
+
+{
+  "sender": "test",
+  "receiver": "testmsi",
+  "message": "hello"
+}

@@ -10,6 +10,9 @@ const CLOUDINARY_API_SECRET = process.env.COUDINARY_API_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_EXPIRY = process.env.ACCESS_EXPIRY;
 const REFRESH_EXPIRY = process.env.REFRESH_EXPIRY;
+const KAFKA_CLIENT_ID = process.env.KAFKA_CLIENT_ID;
+const KAFKA_TOPIC = process.env.KAFKA_TOPIC;
+const KAFKA_CONSUMER_GROUP = process.env.KAFKA_CONSUMER_GROUP;
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: true,
@@ -27,4 +30,7 @@ export {
   ACCESS_EXPIRY,
   REFRESH_EXPIRY,
   COOKIE_OPTIONS,
+  KAFKA_CLIENT_ID,
+  KAFKA_TOPIC,
+  KAFKA_CONSUMER_GROUP,
 };

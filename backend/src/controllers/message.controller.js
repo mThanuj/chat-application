@@ -2,6 +2,8 @@ import asyncHandler from "../utils/asyncHandler.js";
 import Message from "../models/message.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import User from "../models/user.model.js";
+import {kafkaProducer} from "../utils/kafka-utils/message.broker.js";
+import {KAFKA_TOPIC} from "../constants.js";
 
 export const getUsers = asyncHandler(async (req, res) => {
   const id = req.user._id;
@@ -28,17 +30,15 @@ export const getMessages = asyncHandler(async (req, res) => {
 
 export const sendMessage = asyncHandler(async (req, res) => {
   const { message } = req.body;
-  const receriverId = req.params.id;
+  const receiverId = req.params.id;
   const user = req.user;
 
-  const newMessage = await Message.create({
-    sender,
-    receiver,
-    message,
-  });
-
-  const receiverSocketId = onlineUsers.get(receiver);
-  if (receiverSocketId) {
-    io.to(receiverSocketId.socketId).emit("directMessage", newMessage);
-  }
+  await kafkaProducer.connect();
+  await kafkaProducer.send({
+    topic:KAFKA_TOPIC,
+    messages:[{
+      value:JSON.stringify({user,receiverId,message})
+    }],
+  })
+  await kafkaProducer.disconnect();
 });
