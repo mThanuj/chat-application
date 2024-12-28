@@ -58,7 +58,8 @@ userSchema.methods.generateRefreshToken = async function () {
     { expiresIn: REFRESH_EXPIRY },
   );
 
-  this.refreshToken = await bcryptjs.hash(refreshToken, 10);
+  this.refreshToken = refreshToken;
+  // this.refreshToken = await bcryptjs.hash(refreshToken, 10);
   return refreshToken;
 };
 

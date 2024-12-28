@@ -85,7 +85,7 @@ const useChatStore = create(
     {
       name: "chat-store",
       getStorage: () => localStorage,
-      blacklist: ["messages", "users"],
+      blacklist: ["messages", "users", "receiver"],
     }
   )
 );

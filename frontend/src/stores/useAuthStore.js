@@ -1,6 +1,7 @@
 import { api } from "@/lib/utils.js";
 import { io } from "socket.io-client";
 import { create } from "zustand";
+import useChatStore from "./useChatStore";
 
 const useAuthStore = create((set, get) => ({
   onlineUsers: [],
@@ -16,6 +17,7 @@ const useAuthStore = create((set, get) => ({
         set({ user });
       } else {
         set({ user: null });
+        useChatStore.setState({ receiver: null });
       }
     } catch (error) {
       console.error("Failed to initialize user:", error.message);
@@ -79,7 +81,7 @@ const useAuthStore = create((set, get) => ({
 
   refreshToken: async () => {
     try {
-      const response = await api.post("/auth/refresh-token");
+      const response = await api.post("/auth/refreshToken");
       if (response.status === 200) {
         const user = response.data.data;
         set({ user });
