@@ -20,7 +20,7 @@ io.on("connection", async (socket) => {
   try {
     const userId = socket.handshake.query.userId;
 
-    console.log("Client connected:", userId);
+    console.log("Client connected with userId:", userId);
     if (userId) {
       onlineUsers[userId] = socket.id;
     }
@@ -28,11 +28,10 @@ io.on("connection", async (socket) => {
     io.emit("getOnlineUsers", Object.keys(onlineUsers));
 
     socket.on("disconnect", async () => {
+      console.log("Client disconnected with userId:", userId);
       delete onlineUsers[userId];
 
       io.emit("getOnlineUsers", Object.keys(onlineUsers));
-
-      console.log("Client disconnected");
     });
   } catch (error) {
     console.log("Error on connecting client:", error.message);

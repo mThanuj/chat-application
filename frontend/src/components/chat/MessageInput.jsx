@@ -1,30 +1,29 @@
 import { ArrowRightCircle } from "lucide-react";
 import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
-import useAuthStore from "@/stores/useAuthStore.js";
-import useChatStore from "@/stores/useChatStore.js";
 import { useState } from "react";
+import useChatStore from "@/stores/useChatStore.js";
 
 const MessageInput = () => {
-  const { user, socket } = useAuthStore();
-  const { receiver } = useChatStore();
-
   const [message, setMessage] = useState("");
+  const { sendMessage } = useChatStore();
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    const newMessage = {
-      sender: user.id,
-      receiver,
-      message,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    if (!message.trim()) {
+      return;
+    }
 
-    socket.emit("sendMessage", newMessage);
+    try {
+      await sendMessage({
+        message,
+      });
 
-    setMessage("");
+      setMessage("");
+    } catch (error) {
+      console.log("Failed to send message:", error);
+    }
   };
 
   return (

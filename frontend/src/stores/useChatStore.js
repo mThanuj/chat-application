@@ -21,6 +21,9 @@ const useChatStore = create((set, get) => ({
   },
 
   fetchMessages: async (receiverId) => {
+    if (!receiverId) {
+      return;
+    }
     try {
       const { data } = await api.get(`/messages/${receiverId}`);
       set({ messages: data.data });
@@ -37,7 +40,7 @@ const useChatStore = create((set, get) => ({
         `/messages/send/${receiver}`,
         messageData
       );
-      set({ messages: [...messages, data.data] });
+      set({ messages: [...messages, data] });
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
     }
@@ -52,7 +55,7 @@ const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
 
     socket.on("newMessage", (newMessage) => {
-      const messageFromReceiver = newMessage.sender === receiver._id;
+      const messageFromReceiver = newMessage.sender === receiver;
 
       if (!messageFromReceiver) {
         return;
@@ -61,6 +64,7 @@ const useChatStore = create((set, get) => ({
       set({
         messages: [...get().messages, newMessage],
       });
+      console.log(get().messages);
     });
   },
 

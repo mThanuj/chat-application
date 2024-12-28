@@ -1,22 +1,33 @@
+import useAuthStore from "@/stores/useAuthStore";
 import useChatStore from "@/stores/useChatStore";
-import clsx from "clsx";
+import { useEffect } from "react";
 
 const MessageHistory = () => {
-  const { receiver, messages } = useChatStore();
+  const {
+    messages,
+    fetchMessages,
+    receiver,
+    subscribeToMessages,
+    unsubscribeToMessages,
+  } = useChatStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    fetchMessages(receiver);
+
+    subscribeToMessages();
+
+    return () => {
+      unsubscribeToMessages();
+    };
+  }, [receiver, fetchMessages, subscribeToMessages, unsubscribeToMessages]);
 
   return (
     <div className="p-4">
-      {messages.map((msg, idx) => {
+      {messages.map((message, index) => {
         return (
-          <div
-            key={idx}
-            className={clsx(
-              "",
-              msg.sender === receiver ? "text-left" : "text-right"
-            )}
-          >
-            {msg.message}
-            <span className="text-sm">{msg.createdAt}</span>
+          <div key={index}>
+            <div>{message.message && <p>{message.message}</p>}</div>
           </div>
         );
       })}

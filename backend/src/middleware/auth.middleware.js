@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { JWT_SECRET } from "../constants.js";
 import User from "../models/user.model.js";
+import { getSocketId } from "../lib/sockets.js";
 
 export const verify = asyncHandler(async (req, res, next) => {
   try {

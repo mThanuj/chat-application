@@ -8,6 +8,7 @@ const sendMessageToKafka = async (messageToBeSent) => {
     topic: KAFKA_TOPIC,
     messages: [
       {
+        key: "message",
         value: JSON.stringify(messageToBeSent),
       },
     ],

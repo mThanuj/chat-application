@@ -1,3 +1,4 @@
+import { getSocketId, io } from "../../lib/sockets.js";
 import kafka from "./client.js";
 import { MongoClient, ObjectId } from "mongodb";
 
@@ -47,8 +48,16 @@ async function init(groupId) {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+
+      const receiverSocketId = getSocketId(msg.receiver);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", messageToBeSent);
+      }
+
       buffer.push(messageToBeSent);
-      if (buffer.length > batchSize) await flushBuffer();
+      if (buffer.length > batchSize) {
+        await flushBuffer();
+      }
     },
   });
 }
