@@ -1,35 +1,21 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import useAuthStore from "./stores/useAuthStore.js";
 import { Home } from "./components/custom/Home.jsx";
 import { Login } from "./components/custom/Login.jsx";
-
-const ProtectedRoute = ({ children }) => {
-  const { user } = useAuthStore();
-
-  return user ? children : <Navigate to="/login" />;
-};
-
-<Route
-  path="/"
-  element={
-    <ProtectedRoute>
-      <Home />
-    </ProtectedRoute>
-  }
-/>;
+import { useEffect } from "react";
 
 function App() {
+  const initializeUser = useAuthStore((state) => state.initializeUser);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    initializeUser();
+  }, [initializeUser]);
+
   return (
     <div>
       <Routes>
-        <Route
-          path={"/"}
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        <Route path={"/"} element={user ? <Home /> : <Login />} />
         <Route path={"/login"} element={<Login />} />
         <Route path={"/register"} element={<h1>Register page</h1>} />
       </Routes>

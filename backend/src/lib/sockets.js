@@ -2,8 +2,6 @@ import http from "http";
 import { Server } from "socket.io";
 import app from "../app.js";
 import { CORS_ORIGIN } from "../constants.js";
-import User from "../models/user.model.js";
-import { sendMessageToKafka } from "../utils/kafka/producer.js";
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -12,45 +10,27 @@ const io = new Server(server, {
   },
 });
 
-let onlineUsers = new Map();
+let onlineUsers = {};
+
+function getSocketId(userId) {
+  return onlineUsers[userId];
+}
 
 io.on("connection", async (socket) => {
   try {
     const userId = socket.handshake.query.userId;
 
     console.log("Client connected:", userId);
-    onlineUsers.set(userId, socket.id);
-
-    for (const [id, socketId] of onlineUsers.entries()) {
-      const onlineUserDocs = await User.find({
-        _id: {
-          $in: Array.from(onlineUsers.keys()),
-          $ne: id,
-        },
-      }).select("-password -refreshToken");
-
-      io.to(socketId).emit("getOnlineUsers", onlineUserDocs);
+    if (userId) {
+      onlineUsers[userId] = socket.id;
     }
 
-    socket.on("sendMessage", async (messageToBeSent) => {
-      await sendMessageToKafka(messageToBeSent);
-    });
+    io.emit("getOnlineUsers", Object.keys(onlineUsers));
 
     socket.on("disconnect", async () => {
-      if (onlineUsers.has(userId)) {
-        onlineUsers.delete(userId);
-      }
+      delete onlineUsers[userId];
 
-      for (const [id, socketId] of onlineUsers.entries()) {
-        const onlineUserDocs = await User.find({
-          _id: {
-            $in: Array.from(onlineUsers.keys()),
-            $ne: id,
-          },
-        }).select("-password -refreshToken");
-
-        io.to(socketId).emit("getOnlineUsers", onlineUserDocs);
-      }
+      io.emit("getOnlineUsers", Object.keys(onlineUsers));
 
       console.log("Client disconnected");
     });
@@ -59,4 +39,4 @@ io.on("connection", async (socket) => {
   }
 });
 
-export { server, io };
+export { server, io, getSocketId };

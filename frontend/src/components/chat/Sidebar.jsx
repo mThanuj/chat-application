@@ -1,10 +1,22 @@
 import useAuthStore from "@/stores/useAuthStore";
 import { Button } from "@/components/ui/button";
 import useChatStore from "@/stores/useChatStore";
+import { useEffect } from "react";
 
 export function SideBar() {
-  const { user, onlineUsers } = useAuthStore();
-  const { receiver, setCurrentReceiver } = useChatStore();
+  const { onlineUsers, user, initializeUser } = useAuthStore();
+  const { users, setReceiver, getUsers } = useChatStore();
+
+  useEffect(() => {
+    initializeUser();
+    getUsers();
+  }, [getUsers, initializeUser]);
+
+  const filteredUsers = users.filter((u) => onlineUsers.includes(u._id));
+
+  if (user === null) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="h-screen w-[20%] border-2 text-center flex flex-col overflow-y-auto gap-4 p-4">
@@ -12,17 +24,17 @@ export function SideBar() {
         Hello: <span>{user.username}</span>
       </h2>
       <h1 className={"font-bold text-lg"}>Online Users</h1>
-      {onlineUsers.length > 0 ? (
-        onlineUsers.map((u, index) => (
+      {filteredUsers.length > 0 ? (
+        filteredUsers.map((u, index) => (
           <Button
             key={index}
             onClick={() => {
-              setCurrentReceiver(u._id);
+              setReceiver(u._id);
             }}
           >
-            <span className={"flex justify-center items-center"}>
-              {u.username}
-            </span>
+            <div className="text-left min-w-0">
+              <div className="font-medium truncate">{u.username}</div>
+            </div>
           </Button>
         ))
       ) : (

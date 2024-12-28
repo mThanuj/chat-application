@@ -3,9 +3,20 @@ import { io } from "socket.io-client";
 import { create } from "zustand";
 
 const useAuthStore = create((set, get) => ({
-  onlineUsers: JSON.parse(localStorage.getItem("onlineUsers")) || [],
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  onlineUsers: [],
+  user: null,
   socket: null,
+
+  initializeUser: async () => {
+    const response = await api.get("/auth/current-user");
+
+    if (response.status === 200) {
+      const user = await response.data.data;
+      set({ user });
+    } else {
+      set({ user: null });
+    }
+  },
 
   login: async (username, password) => {
     try {
@@ -16,8 +27,6 @@ const useAuthStore = create((set, get) => ({
 
       const user = res.data.data;
       set({ user });
-
-      localStorage.setItem("user", JSON.stringify(user));
 
       get().connectSocket();
     } catch (error) {
@@ -30,22 +39,7 @@ const useAuthStore = create((set, get) => ({
       await api.get("/auth/logout");
       set({ user: null });
 
-      localStorage.clear();
-
       get().disconnectSocket();
-    } catch (error) {
-      throw new Error("Internal Server Error", error.message);
-    }
-  },
-
-  getCurrentUser: async () => {
-    try {
-      const { data } = await api.get("/auth/current-user");
-      set({ user: data.data });
-
-      localStorage.setItem("user", JSON.stringify(data.data));
-
-      get().connectSocket();
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
     }
@@ -66,16 +60,9 @@ const useAuthStore = create((set, get) => ({
 
     set({ socket });
 
-    socket.on("connect", () => {
-      // TODO:
-    });
-
     socket.on("getOnlineUsers", (data) => {
-      localStorage.setItem("onlineUsers", JSON.stringify(data));
       set({ onlineUsers: data });
     });
-
-    socket.on();
   },
 
   disconnectSocket: async () => {

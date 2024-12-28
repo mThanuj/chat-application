@@ -1,27 +1,72 @@
 import { api } from "@/lib/utils.js";
 import { create } from "zustand";
+import useAuthStore from "./useAuthStore";
 
 const useChatStore = create((set, get) => ({
   messages: [],
+  users: [],
   receiver: null,
+
+  setReceiver: (receiver) => {
+    set({ receiver });
+  },
+
+  getUsers: async () => {
+    try {
+      const { data } = await api.get("/messages/users");
+      set({ users: data.data });
+    } catch (error) {
+      throw new Error("Internal Server Error", error.message);
+    }
+  },
 
   fetchMessages: async (receiverId) => {
     try {
       const { data } = await api.get(`/messages/${receiverId}`);
-
       set({ messages: data.data });
     } catch (error) {
       throw new Error("Internal Server Error", error.message);
     }
   },
 
-  addNewMessages: async (newMessages) => {
-    get().messages.push(...newMessages);
+  sendMessage: async (messageData) => {
+    const { receiver, messages } = get();
+
+    try {
+      const { data } = await api.post(
+        `/messages/send/${receiver}`,
+        messageData
+      );
+      set({ messages: [...messages, data.data] });
+    } catch (error) {
+      throw new Error("Internal Server Error", error.message);
+    }
   },
 
-  setCurrentReceiver: (receiverId) => {
-    get().fetchMessages(receiverId);
-    set({ receiver: receiverId });
+  subscribeToMessages: () => {
+    const { receiver } = get();
+    if (!receiver) {
+      return;
+    }
+
+    const socket = useAuthStore.getState().socket;
+
+    socket.on("newMessage", (newMessage) => {
+      const messageFromReceiver = newMessage.sender === receiver._id;
+
+      if (!messageFromReceiver) {
+        return;
+      }
+
+      set({
+        messages: [...get().messages, newMessage],
+      });
+    });
+  },
+
+  unsubscribeToMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    socket.off("newMessage");
   },
 }));
 
