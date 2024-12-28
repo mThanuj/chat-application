@@ -39,4 +39,5 @@ export const sendMessage = asyncHandler(async (req, res) => {
   };
 
   await sendMessageToKafka(messageToBeSent);
+  res.status(201).json(new ApiResponse(201,'',"Message sent successfully"));
 });
