@@ -13,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={"p-4"}>
+    <nav className={"p-4 w-[10%]"}>
       <Button onClick={handleLogout}>Logout</Button>
     </nav>
   );

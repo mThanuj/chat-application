@@ -1,5 +1,6 @@
 import useChatStore from "@/stores/useChatStore";
-import { useEffect } from "react";
+import clsx from "clsx";
+import { useEffect, useRef } from "react";
 
 const MessageHistory = () => {
   const {
@@ -9,6 +10,7 @@ const MessageHistory = () => {
     subscribeToMessages,
     unsubscribeToMessages,
   } = useChatStore();
+  const messageEndRef = useRef(null);
 
   useEffect(() => {
     fetchMessages(receiver);
@@ -20,15 +22,32 @@ const MessageHistory = () => {
     };
   }, [receiver, fetchMessages, subscribeToMessages, unsubscribeToMessages]);
 
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   return (
-    <div className="p-4">
-      {messages.map((message, index) => {
-        return (
-          <div key={index}>
-            <div>{message.message && <p>{message.message}</p>}</div>
+    <div className="h-screen overflow-y-auto space-y-4 p-6">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`flex ${message.sender === receiver ? "justify-start" : "justify-end"}`}
+          ref={messageEndRef}
+        >
+          <div
+            className={clsx(
+              "max-w-md px-4 py-2 rounded-lg",
+              message.sender === receiver
+                ? "bg-gray-300 text-black rounded-lg rounded-tl-none"
+                : "bg-blue-600 text-white rounded-lg rounded-br-none"
+            )}
+          >
+            <p>{message.message}</p>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 };

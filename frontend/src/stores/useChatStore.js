@@ -9,34 +9,44 @@ const useChatStore = create(
       messages: [],
       users: [],
       receiver: null,
+      isFetchingUsers: false,
+      isFetchingMessages: false,
+      isSendingMessage: false,
 
       setReceiver: (receiver) => {
         set({ receiver });
       },
 
       getUsers: async () => {
+        set({ isFetchingUsers: true });
         try {
           const { data } = await api.get("/messages/users");
           set({ users: data.data });
         } catch (error) {
           console.error("Error fetching users:", error.message);
+        } finally {
+          set({ isFetchingUsers: false });
         }
       },
 
       fetchMessages: async (receiverId) => {
         if (!receiverId) return;
 
+        set({ isFetchingMessages: true });
         try {
           const { data } = await api.get(`/messages/${receiverId}`);
           set({ messages: data.data });
         } catch (error) {
           console.error("Error fetching messages:", error.message);
+        } finally {
+          set({ isFetchingMessages: false });
         }
       },
 
       sendMessage: async (messageData) => {
         const { receiver } = get();
 
+        set({ isSendingMessage: true });
         try {
           const { data } = await api.post(
             `/messages/send/${receiver}`,
@@ -47,6 +57,8 @@ const useChatStore = create(
           }));
         } catch (error) {
           console.error("Error sending message:", error.message);
+        } finally {
+          set({ isSendingMessage: false });
         }
       },
 
