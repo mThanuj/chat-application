@@ -6,13 +6,12 @@ import { useEffect } from "react";
 export function SideBar() {
   const { onlineUsers, user, initializeUser } = useAuthStore();
   const { users, setReceiver, getUsers } = useChatStore();
+  // const filteredUsers = users.filter((u) => onlineUsers.includes(u._id));
 
   useEffect(() => {
     initializeUser();
     getUsers();
   }, [getUsers, initializeUser]);
-
-  const filteredUsers = users.filter((u) => onlineUsers.includes(u._id));
 
   if (user === null) {
     return <div>Loading...</div>;
@@ -24,8 +23,8 @@ export function SideBar() {
         Hello: <span>{user.username}</span>
       </h2>
       <h1 className={"font-bold text-lg"}>Online Users</h1>
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((u, index) => (
+      {users.length > 0 ? (
+        users.map((u, index) => (
           <Button
             key={index}
             onClick={() => {

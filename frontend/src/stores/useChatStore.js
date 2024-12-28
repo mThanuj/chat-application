@@ -54,6 +54,10 @@ const useChatStore = create((set, get) => ({
 
     const socket = useAuthStore.getState().socket;
 
+    if (!socket) {
+      return;
+    }
+
     socket.on("newMessage", (newMessage) => {
       const messageFromReceiver = newMessage.sender === receiver;
 
@@ -64,7 +68,6 @@ const useChatStore = create((set, get) => ({
       set({
         messages: [...get().messages, newMessage],
       });
-      console.log(get().messages);
     });
   },
 

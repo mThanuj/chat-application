@@ -1,4 +1,3 @@
-import useAuthStore from "@/stores/useAuthStore";
 import useChatStore from "@/stores/useChatStore";
 import { useEffect } from "react";
 
@@ -10,7 +9,6 @@ const MessageHistory = () => {
     subscribeToMessages,
     unsubscribeToMessages,
   } = useChatStore();
-  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchMessages(receiver);
