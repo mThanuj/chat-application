@@ -1,7 +1,10 @@
 import useAuthStore from "@/stores/useAuthStore";
+import { Button } from "@/components/ui/button";
+import useChatStore from "@/stores/useChatStore";
 
 export function SideBar() {
   const { user, onlineUsers } = useAuthStore();
+  const { receiver, setCurrentReceiver } = useChatStore();
 
   return (
     <div className="h-screen w-[20%] border-2 text-center flex flex-col overflow-y-auto gap-4 p-4">
@@ -11,11 +14,16 @@ export function SideBar() {
       <h1 className={"font-bold text-lg"}>Online Users</h1>
       {onlineUsers.length > 0 ? (
         onlineUsers.map((u, index) => (
-          <div key={index} onClick={() => {}}>
+          <Button
+            key={index}
+            onClick={() => {
+              setCurrentReceiver(u._id);
+            }}
+          >
             <span className={"flex justify-center items-center"}>
-              <p>{u.username}</p>
+              {u.username}
             </span>
-          </div>
+          </Button>
         ))
       ) : (
         <p>No users online</p>

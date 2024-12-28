@@ -11,6 +11,7 @@ const router = express.Router();
 router.get("/users", verify, getUsers);
 
 router.get("/:id", verify, getMessages);
+
 router.post("/send/:id", verify, sendMessage);
 
 export default router;

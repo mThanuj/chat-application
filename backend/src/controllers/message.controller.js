@@ -19,10 +19,16 @@ export const getMessages = asyncHandler(async (req, res) => {
 
   const messages = await Message.find({
     $or: [
-      { sender: user._id, receiver: receiverId },
-      { sender: receiverId, receiver: user._id },
+      {
+        sender: user._id,
+        receiver: receiverId,
+      },
+      {
+        sender: receiverId,
+        receiver: user._id,
+      },
     ],
-  });
+  }).sort({ createdAt: -1 });
 
   res.status(200).json(new ApiResponse(200, messages, "Messages fetched"));
 });
@@ -39,5 +45,5 @@ export const sendMessage = asyncHandler(async (req, res) => {
   };
 
   await sendMessageToKafka(messageToBeSent);
-  res.status(201).json(new ApiResponse(201,'',"Message sent successfully"));
+  res.status(201).json(new ApiResponse(201, "", "Message sent successfully"));
 });
