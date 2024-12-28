@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Login, Home } from "./components/custom/exportComponents.js";
 import useAuthStore from "./stores/useAuthStore.js";
+import { Home } from "./components/custom/Home.jsx";
+import { Login } from "./components/custom/Login.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
