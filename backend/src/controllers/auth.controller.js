@@ -8,7 +8,6 @@ const generateTokens = async (user) => {
   try {
     const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
-
     await user.save();
 
     return { accessToken, refreshToken };
@@ -27,7 +26,6 @@ export const signup = asyncHandler(async (req, res) => {
 
   const user = new User({ username, password });
   const { accessToken, refreshToken } = await generateTokens(user);
-
   const response = new ApiResponse(201, user, "User created");
 
   res
