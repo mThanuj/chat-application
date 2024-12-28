@@ -15,6 +15,10 @@ const useChatStore = create((set, get) => ({
     }
   },
 
+  addNewMessages: async (newMessages) => {
+    get().messages.push(...newMessages);
+  },
+
   setCurrentReceiver: (receiverId) => {
     get().fetchMessages(receiverId);
     set({ receiver: receiverId });

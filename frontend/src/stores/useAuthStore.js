@@ -74,6 +74,8 @@ const useAuthStore = create((set, get) => ({
       localStorage.setItem("onlineUsers", JSON.stringify(data));
       set({ onlineUsers: data });
     });
+
+    socket.on();
   },
 
   disconnectSocket: async () => {
