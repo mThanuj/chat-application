@@ -8,29 +8,31 @@ const useAuthStore = create((set, get) => ({
   socket: null,
 
   initializeUser: async () => {
-    const response = await api.get("/auth/current-user");
+    try {
+      const response = await api.get("/auth/current-user");
 
-    if (response.status === 200) {
-      const user = await response.data.data;
-      set({ user });
-    } else {
+      if (response.status === 200) {
+        const user = response.data.data;
+        set({ user });
+      } else {
+        set({ user: null });
+      }
+    } catch (error) {
+      console.error("Failed to initialize user:", error.message);
       set({ user: null });
     }
   },
 
   login: async (username, password) => {
     try {
-      const res = await api.post("/auth/login", {
-        username,
-        password,
-      });
-
+      const res = await api.post("/auth/login", { username, password });
       const user = res.data.data;
       set({ user });
 
       get().connectSocket();
     } catch (error) {
-      throw new Error("Internal Server Error", error.message);
+      console.error("Login failed:", error.message);
+      throw new Error(`Internal Server Error: ${error.message}`);
     }
   },
 
@@ -38,40 +40,57 @@ const useAuthStore = create((set, get) => ({
     try {
       await api.get("/auth/logout");
       set({ user: null });
-
       get().disconnectSocket();
     } catch (error) {
-      throw new Error("Internal Server Error", error.message);
+      console.error("Logout failed:", error.message);
+      throw new Error(`Internal Server Error: ${error.message}`);
     }
   },
 
   connectSocket: async () => {
-    const { user } = get();
-    if (!user || get().socket?.connected) {
+    const { user, socket } = get();
+    if (!user || (socket && socket.connected)) {
       return;
     }
 
-    const socket = io("http://localhost:5000", {
-      query: {
-        userId: user._id,
-      },
+    if (socket) {
+      socket.disconnect();
+    }
+
+    const newSocket = io("http://localhost:5000", {
+      query: { userId: user._id },
     });
-    socket.connect();
 
-    set({ socket });
+    newSocket.connect();
+    set({ socket: newSocket });
 
-    socket.on("getOnlineUsers", (data) => {
+    newSocket.on("getOnlineUsers", (data) => {
       set({ onlineUsers: data });
     });
   },
 
   disconnectSocket: async () => {
-    if (get().socket && get().socket?.connected) {
-      get().socket.disconnect();
+    const { socket } = get();
+    if (socket && socket.connected) {
+      socket.disconnect();
+      set({ socket: null });
     }
   },
 
-  refreshToken: async () => {},
+  refreshToken: async () => {
+    try {
+      const response = await api.post("/auth/refresh-token");
+      if (response.status === 200) {
+        const user = response.data.data;
+        set({ user });
+      } else {
+        set({ user: null });
+      }
+    } catch (error) {
+      console.error("Token refresh failed:", error.message);
+      set({ user: null });
+    }
+  },
 }));
 
 export default useAuthStore;
