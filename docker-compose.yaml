@@ -1,10 +1,14 @@
 version: "3"
 services:
   zookeeper:
+    ports:
+      - 2181:2181
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - chat-application
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -19,3 +23,25 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - chat-application
+
+  frontend:
+    build: frontend
+    ports:
+      - 5173:5173
+    networks:
+      - chat-application
+
+  backend:
+    build: backend
+    depends_on:
+      - kafka
+    ports:
+      - 5000:5000
+    networks:
+      - chat-application
+
+networks:
+  chat-application:
+    driver: bridge

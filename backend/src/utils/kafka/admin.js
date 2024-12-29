@@ -18,4 +18,4 @@ async function init() {
   admin.disconnect();
 }
 
-init();
+export { init };
