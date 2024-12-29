@@ -3,6 +3,7 @@ import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
 import { useState } from "react";
 import useChatStore from "@/stores/useChatStore.js";
+import chalk from "chalk";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
@@ -12,6 +13,7 @@ const MessageInput = () => {
     e.preventDefault();
 
     if (!message.trim()) {
+      console.log(chalk.yellow("⚠️ Empty message, not sending"));
       return;
     }
 

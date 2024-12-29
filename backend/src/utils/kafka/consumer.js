@@ -1,6 +1,7 @@
 import { getSocketId, io } from "../../lib/sockets.js";
 import kafka from "./client.js";
 import { MongoClient, ObjectId } from "mongodb";
+import chalk from "chalk";
 
 const mongoConnect = async () => {
   const mongoClient = new MongoClient(
@@ -24,8 +25,11 @@ async function init(groupId) {
       try {
         const collection = await mongoConnect();
         await collection.insertMany(messages);
+        console.log(chalk.green("✅ Messages saved to MongoDB"));
       } catch (error) {
-        console.log("setInterval", error.message);
+        console.error(
+          chalk.red("❌ Error saving messages to MongoDB:", error.message),
+        );
       }
     }
   };
@@ -51,11 +55,19 @@ async function init(groupId) {
 
       const receiverSocketId = getSocketId(msg.receiver);
       if (receiverSocketId) {
+        console.log(
+          chalk.cyan(`📩 Sending message to socket ${receiverSocketId}`),
+        );
         io.to(receiverSocketId).emit("newMessage", messageToBeSent);
+      } else {
+        console.log(
+          chalk.yellow(`⚠️ No socket found for receiver ${msg.receiver}`),
+        );
       }
 
       buffer.push(messageToBeSent);
       if (buffer.length > batchSize) {
+        console.log(chalk.cyan(`⏳ Buffer size exceeded, flushing buffer`));
         await flushBuffer();
       }
     },

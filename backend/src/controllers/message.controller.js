@@ -3,12 +3,15 @@ import Message from "../models/message.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import User from "../models/user.model.js";
 import { sendMessageToKafka } from "../utils/kafka/producer.js";
-import { getSocketId, io } from "../lib/sockets.js";
+import chalk from "chalk";
 
 export const getUsers = asyncHandler(async (req, res) => {
   const id = req.user._id;
   const users = await User.find({ _id: { $ne: id } }).select(
     "-password -refreshToken",
+  );
+  console.log(
+    chalk.green(`✅ Users fetched successfully, excluding user ${id}`),
   );
 
   res.status(200).json(new ApiResponse(200, users, "Users fetched"));
@@ -30,11 +33,16 @@ export const getMessages = asyncHandler(async (req, res) => {
       },
     ],
   }).sort({ createdAt: 1 });
+  console.log(
+    chalk.green(
+      `✅ Messages fetched for user ${user._id} and receiver ${receiverId}`,
+    ),
+  );
 
   res.status(200).json(new ApiResponse(200, messages, "Messages fetched"));
 });
 
-export const sendMessage = async (req, res) => {
+export const sendMessage = asyncHandler(async (req, res) => {
   try {
     const { id: receiver } = req.params;
     const sender = req.user._id;
@@ -52,7 +60,9 @@ export const sendMessage = async (req, res) => {
 
     res.status(201).json(newMessage);
   } catch (error) {
-    console.log("Error in sendMessage controller: ", error.message);
+    console.log(
+      chalk.red(`❌ Error in sendMessage controller: ${error.message}`),
+    );
     res.status(500).json({ error: "Internal server error" });
   }
-};
+});
